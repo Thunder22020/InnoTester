@@ -18,9 +18,7 @@ class AppTheme {
               TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
       iconTheme: IconThemeData(color: Colors.black),
       fontFamily: "Inter",
-      useMaterial3: true
-      // другие параметры
-      );
+      useMaterial3: true);
 
   static ThemeData dark = ThemeData(
       scaffoldBackgroundColor: DarkThemeColors.backgroundColor,
@@ -36,7 +34,5 @@ class AppTheme {
               TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
       iconTheme: IconThemeData(color: Colors.white),
       fontFamily: "Inter",
-      useMaterial3: true
-      // другие параметры
-      );
+      useMaterial3: true);
 }

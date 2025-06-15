@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:inno_test/data/repositories/in_memory_test_repository.dart';
+import 'package:inno_test/data/repositories/test_repository.dart';
 import 'package:inno_test/presentation/pages/home_page.dart';
+import 'package:inno_test/presentation/providers/test_provider.dart';
 import 'package:inno_test/presentation/providers/theme_provider.dart';
 import 'package:inno_test/presentation/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  final TestRepository testRepository = InMemoryTestRepository();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TestProvider(testRepository),
+        )
+      ],
       child: const MyApp(),
     ),
   );
@@ -30,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeProvider.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }

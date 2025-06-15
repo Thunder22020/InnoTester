@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:inno_test/presentation/pages/result_page.dart';
-import 'package:inno_test/presentation/widgets/appbars/appbar_with_text.dart';
+import 'package:inno_test/presentation/widgets/appbars/appbar_empty.dart';
 import 'package:inno_test/presentation/widgets/loading_indicator.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/test_provider.dart';
 import '../providers/theme_provider.dart';
 
 class LoadingPage extends StatefulWidget {
-  const LoadingPage({super.key});
+  final String url;
+  final List<String> tests;
+
+  const LoadingPage({super.key, required this.tests, required this.url});
 
   @override
   State<LoadingPage> createState() => _LoadingPageState();
@@ -17,12 +21,26 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ResultPage()),
-      );
-    });
+    _startTest();
+  }
+
+  Future<void> _startTest() async {
+    try {
+      await Provider.of<TestProvider>(context, listen: false)
+          .runTests(widget.url, widget.tests);
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ResultPage()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   @override
@@ -31,8 +49,7 @@ class _LoadingPageState extends State<LoadingPage> {
 
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(100),
-          child: AppbarWithText(text: "")),
+          preferredSize: const Size.fromHeight(100), child: AppbarEmpty()),
       body: Container(
         alignment: Alignment.topCenter,
         child: SingleChildScrollView(

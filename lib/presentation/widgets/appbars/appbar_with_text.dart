@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../pages/home_page.dart';
 import '../../providers/theme_provider.dart';
 
 class AppbarWithText extends StatelessWidget {
@@ -34,19 +35,52 @@ class AppbarWithText extends StatelessWidget {
                 ),
               ),
             ),
-            Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: 10),
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    color: Color(0xFF737373),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 17,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                );
+              },
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 200,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(30)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.home,
+                            size: 17,
+                            color: Color(0xFF898989),
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Text(
+                            text,
+                            style: const TextStyle(
+                              color: Color(0xFF898989),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),

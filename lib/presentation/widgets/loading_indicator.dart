@@ -21,7 +21,7 @@ class _LoadingIndicatorState extends State<LoadingIndicator> {
     super.initState();
     timer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
       setState(() {
-        activeDot = (activeDot + 1) % 3; // поочередное переключение 0→1→2→0...
+        activeDot = (activeDot + 1) % 3;
       });
     });
   }
