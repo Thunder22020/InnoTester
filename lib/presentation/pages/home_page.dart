@@ -79,8 +79,7 @@ class _HomePageState extends State<HomePage>
 
     try {
       final response = await http.post(
-        Uri.parse(
-            'https://05e46182-5a40-43b8-87f9-89697aae74cc.mock.pstmn.io/checkurl'),
+        Uri.parse('http://31.129.111.114:8080/api/checkurl'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'url': url}),
       );
@@ -165,6 +164,7 @@ class _HomePageState extends State<HomePage>
                             ),
                           ),
                           child: TextFormField(
+                            style: TextStyle(fontWeight: FontWeight.w500),
                             onFieldSubmitted: (text) {
                               sendUrl(testProvider);
                             },
@@ -244,7 +244,6 @@ class _HomePageState extends State<HomePage>
                       onTap: () {
                         var id =
                             DateTime.now().microsecondsSinceEpoch.toString();
-
                         setState(() {
                           if (testProvider.getTests().length == _tiles.length) {
                             _tiles.add(id);
@@ -291,12 +290,10 @@ class _HomePageState extends State<HomePage>
             margin: EdgeInsets.only(bottom: 50),
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
-              child: _tiles.length <= 0
+              child: _tiles.isEmpty
                   ? Text("")
                   : GestureDetector(
                       onTap: () {
-                        print(testProvider.getTests());
-
                         testProvider.removeAllTests();
                         setState(() {
                           _tiles.clear();
