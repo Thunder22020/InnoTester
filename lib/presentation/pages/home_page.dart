@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:inno_test/presentation/providers/test_provider.dart';
 import 'package:inno_test/presentation/widgets/appbars/appbar_home_page.dart';
-import 'package:inno_test/presentation/widgets/test_tile.dart';
+import 'package:inno_test/presentation/widgets/attribute_check_tile.dart';
+import 'package:inno_test/presentation/widgets/scenario_button.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/theme_provider.dart';
@@ -101,6 +102,23 @@ class _HomePageState extends State<HomePage>
     }
   }
 
+  void onScenarioButtonPressed(TestProvider testProvider) {
+    var id = DateTime.now().microsecondsSinceEpoch.toString();
+    setState(() {
+      if (testProvider.getTests().length == _tiles.length) {
+        _tiles.add(id);
+      }
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -168,7 +186,7 @@ class _HomePageState extends State<HomePage>
                             onFieldSubmitted: (text) {
                               sendUrl(testProvider);
                             },
-                            cursorColor: Colors.black,
+                            cursorColor: Color(0xFF0088FF),
                             controller: textEditingController,
                             decoration: InputDecoration(
                               contentPadding:
@@ -222,11 +240,48 @@ class _HomePageState extends State<HomePage>
                   SizedBox(
                     height: 10,
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ScenarioButton(
+                        onPressed: () {
+                          onScenarioButtonPressed(testProvider);
+                        },
+                        text: "Variant 1",
+                        isSelected: false,
+                      ),
+                      SizedBox(
+                        width: 25,
+                      ),
+                      ScenarioButton(
+                        onPressed: () {
+                          onScenarioButtonPressed(testProvider);
+                        },
+                        text: "Variant 2",
+                        isSelected: false,
+                      ),
+                      SizedBox(
+                        width: 25,
+                      ),
+                      ScenarioButton(
+                        onPressed: () {
+                          onScenarioButtonPressed(testProvider);
+                        },
+                        text: "Variant 3",
+                        isSelected: false,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Container(
                     alignment: Alignment.center,
+                    margin: EdgeInsets.only(bottom: 140),
                     child: Column(
                       children: _tiles.map((tileId) {
-                        return TestTile(
+                        print(testProvider.results.toString());
+                        return AttributeCheckTile(
                           key: ValueKey(tileId),
                           id: tileId,
                           onDelete: () {
@@ -235,50 +290,16 @@ class _HomePageState extends State<HomePage>
                             });
                           },
                         );
+                        // return TestTile(
+                        //   key: ValueKey(tileId),
+                        //   id: tileId,
+                        //   onDelete: () {
+                        //     setState(() {
+                        //       _tiles.removeWhere((e) => e == tileId);
+                        //     });
+                        //   },
+                        // );
                       }).toList(),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 140),
-                    child: GestureDetector(
-                      onTap: () {
-                        var id =
-                            DateTime.now().microsecondsSinceEpoch.toString();
-                        setState(() {
-                          if (testProvider.getTests().length == _tiles.length) {
-                            _tiles.add(id);
-                          }
-                        });
-
-                        Future.delayed(Duration(milliseconds: 100), () {
-                          scrollController.animateTo(
-                            scrollController.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeOut,
-                          );
-                        });
-                      },
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Container(
-                          margin: EdgeInsets.only(top: 10),
-                          decoration: BoxDecoration(
-                              color: themeProvider.isDarkTheme
-                                  ? Color(0xFF898989)
-                                  : Color(0xFFF5F5F5),
-                              shape: BoxShape.circle),
-                          alignment: Alignment.center,
-                          width: 40,
-                          height: 40,
-                          child: Icon(
-                            size: 25,
-                            Icons.add,
-                            color: themeProvider.isDarkTheme
-                                ? Color(0xFFF5F5F5)
-                                : Color(0xFFB2B2B2),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -300,29 +321,30 @@ class _HomePageState extends State<HomePage>
                         });
                       },
                       child: Container(
-                          decoration: BoxDecoration(
-                              color: themeProvider.isDarkTheme
-                                  ? Color(0xFF303030)
-                                  : Color(0xFFF5F5F5),
-                              borderRadius: BorderRadius.circular(45)),
-                          width: 193,
-                          height: 50,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.delete,
+                        decoration: BoxDecoration(
+                            color: themeProvider.isDarkTheme
+                                ? Color(0xFF303030)
+                                : Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(45)),
+                        width: 193,
+                        height: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            const Text(
+                              'Delete all tests',
+                              style: TextStyle(
                                 color: Colors.red,
+                                fontWeight: FontWeight.w500,
                               ),
-                              const Text(
-                                'Delete all tests',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                            ],
-                          )),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
             ),
           )
