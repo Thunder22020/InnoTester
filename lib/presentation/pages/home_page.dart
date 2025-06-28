@@ -8,6 +8,7 @@ import 'package:inno_test/presentation/widgets/appbars/appbar_home_page.dart';
 import 'package:inno_test/presentation/widgets/attribute_check_tile.dart';
 import 'package:inno_test/presentation/widgets/scenario_button.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/theme_provider.dart';
 import '../widgets/smart_input_tile.dart';
@@ -86,6 +87,11 @@ class _HomePageState extends State<HomePage>
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'url': url}),
       );
+      final setCookie = response.headers['set-cookie'];
+      if (setCookie != null && setCookie.contains('instructions shown=true')) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('instructions_shown', true);
+      }
 
       final data = json.decode(response.body);
 
@@ -143,6 +149,14 @@ class _HomePageState extends State<HomePage>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      final value = prefs.getBool('instructions_shown');
+                      print('instructions_shown = $value');
+                    },
+                    child: const Text('Проверить флаг'),
+                  ),
                   SizedBox(
                     height: 150,
                   ),
