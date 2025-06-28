@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inno_test/domain/enums/test_variant_type.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/model/test.dart';
@@ -8,8 +9,13 @@ import '../providers/theme_provider.dart';
 class SmartInputTile extends StatefulWidget {
   final String id;
   final VoidCallback onDelete;
+  final TestVariantType type;
 
-  const SmartInputTile({super.key, required this.onDelete, required this.id});
+  const SmartInputTile(
+      {super.key,
+      required this.onDelete,
+      required this.id,
+      required this.type});
 
   @override
   State<SmartInputTile> createState() => _SmartInputTileState();
@@ -102,8 +108,10 @@ class _SmartInputTileState extends State<SmartInputTile> {
               child: isEditing
                   ? Row(
                       children: [
-                        const Text(
-                          "Does ",
+                        Text(
+                          widget.type == TestVariantType.existence
+                              ? "Does "
+                              : "Is ",
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.w500),
                         ),
@@ -136,9 +144,11 @@ class _SmartInputTileState extends State<SmartInputTile> {
                             },
                           ),
                         ),
-                        const Text(
-                          " exist?",
-                          style: TextStyle(
+                        Text(
+                          widget.type == TestVariantType.existence
+                              ? " exist?"
+                              : " clickable?",
+                          style: const TextStyle(
                               fontSize: 12, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(width: 8),
@@ -171,7 +181,9 @@ class _SmartInputTileState extends State<SmartInputTile> {
                     )
                   : Center(
                       child: Text(
-                        "Does $text exist?",
+                        widget.type == TestVariantType.existence
+                            ? "Does $text exist?"
+                            : "Is $text clickable?",
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                         style: const TextStyle(

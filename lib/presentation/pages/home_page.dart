@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:inno_test/domain/enums/test_variant_type.dart';
 import 'package:inno_test/presentation/providers/test_provider.dart';
 import 'package:inno_test/presentation/widgets/appbars/appbar_home_page.dart';
 import 'package:inno_test/presentation/widgets/attribute_check_tile.dart';
@@ -9,6 +10,7 @@ import 'package:inno_test/presentation/widgets/scenario_button.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/theme_provider.dart';
+import '../widgets/smart_input_tile.dart';
 import 'loading_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -102,8 +104,12 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  void onScenarioButtonPressed(TestProvider testProvider) {
+  void onScenarioButtonPressed(
+      TestProvider testProvider, TestVariantType type) {
     var id = DateTime.now().microsecondsSinceEpoch.toString();
+    id += (type == TestVariantType.existence)
+        ? "|ex"
+        : ((type == TestVariantType.attributeCheck) ? "|attr" : "|int");
     setState(() {
       if (testProvider.getTests().length == _tiles.length) {
         _tiles.add(id);
@@ -245,30 +251,33 @@ class _HomePageState extends State<HomePage>
                     children: [
                       ScenarioButton(
                         onPressed: () {
-                          onScenarioButtonPressed(testProvider);
+                          onScenarioButtonPressed(
+                              testProvider, TestVariantType.existence);
                         },
-                        text: "Variant 1",
-                        isSelected: false,
+                        text: "Existence",
+                        type: TestVariantType.existence,
                       ),
                       SizedBox(
                         width: 25,
                       ),
                       ScenarioButton(
                         onPressed: () {
-                          onScenarioButtonPressed(testProvider);
+                          onScenarioButtonPressed(
+                              testProvider, TestVariantType.attributeCheck);
                         },
-                        text: "Variant 2",
-                        isSelected: false,
+                        text: "Correctness",
+                        type: TestVariantType.attributeCheck,
                       ),
                       SizedBox(
                         width: 25,
                       ),
                       ScenarioButton(
                         onPressed: () {
-                          onScenarioButtonPressed(testProvider);
+                          onScenarioButtonPressed(
+                              testProvider, TestVariantType.interactionCheck);
                         },
-                        text: "Variant 3",
-                        isSelected: false,
+                        text: "Clickability",
+                        type: TestVariantType.interactionCheck,
                       ),
                     ],
                   ),
@@ -277,28 +286,46 @@ class _HomePageState extends State<HomePage>
                   ),
                   Container(
                     alignment: Alignment.center,
-                    margin: EdgeInsets.only(bottom: 140),
+                    margin: const EdgeInsets.only(bottom: 140),
                     child: Column(
                       children: _tiles.map((tileId) {
-                        print(testProvider.results.toString());
-                        return AttributeCheckTile(
-                          key: ValueKey(tileId),
-                          id: tileId,
-                          onDelete: () {
-                            setState(() {
-                              _tiles.removeWhere((e) => e == tileId);
-                            });
-                          },
-                        );
-                        // return TestTile(
-                        //   key: ValueKey(tileId),
-                        //   id: tileId,
-                        //   onDelete: () {
-                        //     setState(() {
-                        //       _tiles.removeWhere((e) => e == tileId);
-                        //     });
-                        //   },
-                        // );
+                        final idParts = tileId.split('|');
+                        final id = idParts[0];
+                        final type = idParts.length > 1 ? idParts[1] : 'ex';
+
+                        if (type == 'attr') {
+                          return AttributeCheckTile(
+                            key: ValueKey(tileId),
+                            id: id,
+                            onDelete: () {
+                              setState(() {
+                                _tiles.remove(tileId);
+                              });
+                            },
+                          );
+                        } else if (type == "ex") {
+                          return SmartInputTile(
+                            key: ValueKey(tileId),
+                            id: id,
+                            onDelete: () {
+                              setState(() {
+                                _tiles.remove(tileId);
+                              });
+                            },
+                            type: TestVariantType.existence,
+                          );
+                        } else {
+                          return SmartInputTile(
+                            key: ValueKey(tileId),
+                            id: id,
+                            onDelete: () {
+                              setState(() {
+                                _tiles.remove(tileId);
+                              });
+                            },
+                            type: TestVariantType.interactionCheck,
+                          );
+                        }
                       }).toList(),
                     ),
                   ),
